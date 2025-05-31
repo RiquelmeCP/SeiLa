@@ -1,12 +1,18 @@
-import random  # Importa a biblioteca 'random', usada para gerar números ou escolhas aleatórias
+import os  # Usado para limpar a tela do terminal
+import random  # Usado para gerar números ou escolhas aleatórias
+
+# Função para limpar a tela do terminal
+def limpar_tela():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 # Função que exibe o menu inicial com uma mensagem de boas-vindas
 def menu_inicial():
-    print("=" * 50)  # Imprime 50 sinais de igual para formar uma linha decorativa
+    limpar_tela()
+    print("=" * 50)
     print("       BEM-VINDO AO MEGA PROJETO")
     print("    JOGOS | CALCULADORA | PYTHONZINHO")
     print("=" * 50)
-    input("Pressione ENTER para continuar...")  # Aguarda o usuário apertar ENTER
+    input("Pressione ENTER para continuar...")
 
 # Função do jogo pedra, papel e tesoura (Jokenpo)
 def pedra_papel_tesoura():
@@ -15,11 +21,10 @@ def pedra_papel_tesoura():
     empates = 0
 
     while True:
+        limpar_tela()
         print("\n--- Jokenpo ---")
         opcoes = ['pedra', 'papel', 'tesoura']
-        jogador = input("Escolha pedra, papel ou tesoura: ").lower()  
-        # .lower() transforma todo o texto digitado pelo usuário em minúsculo
-        # Isso evita erro se o usuário digitar "Pedra" ou "PEDRA", pois tudo vira "pedra"
+        jogador = input("Escolha pedra, papel ou tesoura: ").lower()
 
         if jogador not in opcoes:
             print("Opção inválida. Tente novamente.")
@@ -44,7 +49,6 @@ def pedra_papel_tesoura():
         print(f"Você: {vitorias_jogador} | Computador: {vitorias_computador} | Empates: {empates}")
 
         jogar_novamente = input("\nQuer jogar novamente? (s/n): ").lower()
-        # .lower() aqui garante que qualquer entrada como "S", "s", "Sim" fique minúscula e seja comparável
         if jogar_novamente != 's':
             print("Voltando ao menu de jogos...")
             break
@@ -53,17 +57,14 @@ def pedra_papel_tesoura():
 def adivinhar_numero():
     numero_secreto = random.randint(1, 100)
     tentativas = 0
+    limpar_tela()
     print("\n--- Jogo: Adivinha ---")
 
     while True:
         try:
             palpite = int(input("Digite seu palpite: "))
-            # try: Tenta executar esse bloco
-            # Se o usuário digitar algo que não seja número, dá erro e vai para o except
             tentativas += 1
         except ValueError:
-            # except: Executado se acontecer um erro no bloco try
-            # ValueError: tipo de erro que acontece quando tenta converter algo inválido para número
             print("Por favor, digite um número inteiro válido.")
             continue
 
@@ -78,6 +79,7 @@ def adivinhar_numero():
 # Função da calculadora
 def calculadora():
     while True:
+        limpar_tela()
         print("\n--- CALCULADORA ---")
         print("1. Adição")
         print("2. Subtração")
@@ -96,7 +98,6 @@ def calculadora():
             try:
                 n1 = float(input("Digite o primeiro número: "))
                 n2 = float(input("Digite o segundo número: "))
-                # Novamente usamos try-except para capturar erro se o usuário digitar letras ou símbolos
             except ValueError:
                 print("Entrada inválida. Use apenas números.")
                 continue
@@ -113,7 +114,7 @@ def calculadora():
                 else:
                     print("Não é possível dividir por zero.")
             elif opcao == '5':
-                print(f"Resultado: {n1 ** n2}")  # Potência (ex: 2 ** 3 = 8)
+                print(f"Resultado: {n1 ** n2}")
 
         elif opcao == '6':
             try:
@@ -124,14 +125,13 @@ def calculadora():
 
             print(f"\nTabuada do {numero}")
             for i in range(1, 11):
-                # range(1, 11) gera os números de 1 até 10
-                # Usado para fazer a tabuada
                 print(f"{numero} x {i} = {numero * i}")
         else:
             print("Opção inválida. Tente novamente.")
 
 # Função do Pythonzinho (assistente virtual)
 def falar_com_pythonzinho():
+    limpar_tela()
     respostas = {
         "qual seu nome?": "Eu sou o Pythonzinho, seu assistente virtual.",
         "quantos anos você tem?": "Eu não tenho idade, pois sou um programa de computador.",
@@ -152,20 +152,16 @@ def falar_com_pythonzinho():
 
     while True:
         entrada = input("Você: ").lower().strip()
-        # .lower() transforma em minúsculas para facilitar comparação
-        # .strip() remove espaços no início e fim da frase
-        # Ex: "   Olá  " vira "olá"
-
         if entrada == 'sair':
             break
 
         resposta = respostas.get(entrada, "Ainda estou aprendendo a responder isso.")
-        # .get() procura a resposta no dicionário. Se não encontrar, mostra a mensagem padrão
         print(f"Pythonzinho: {resposta}")
 
 # Menu dos jogos
 def menu_jogos():
     while True:
+        limpar_tela()
         print("\n" + "="*40)
         print("            MENU JOGOS")
         print("="*40)
@@ -188,6 +184,7 @@ def menu_jogos():
 # Menu principal
 def menu_principal():
     while True:
+        limpar_tela()
         print("\n" + "="*50)
         print("                 MENU PRINCIPAL")
         print("="*50)
