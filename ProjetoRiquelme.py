@@ -1,162 +1,201 @@
-import os
 import random
+import time
+import os
 
-# Função para limpar a tela com confirmação
+# Cores ANSI
+VERDE = '\033[92m'
+VERMELHO = '\033[91m'
+AZUL = '\033[94m'
+AMARELO = '\033[93m'
+RESET = '\033[0m'
+
+# Limpar tela
 def limpar_tela():
-    input("\nPressione ENTER para continuar...")
     os.system('cls' if os.name == 'nt' else 'clear')
 
-# Perfil do usuário
-perfil_usuario = {
-    'nome': '',
-    'vitorias_jokenpo': 0,
-    'jogadas_jokenpo': 0,
-    'jogadas_adivinha': 0,
-    'interacoes_pythonzinho': 0,
-    'usos_calculadora': 0,
-    'conquistas': []
+# Sistema de conquistas
+conquistas = {
+    "Jokenpo": {
+        "Venceu o bot 3 vezes seguidas": False,
+        "Perdeu 3 vezes seguidas": False
+    },
+    "Adivinha": {
+        "Acertou em até 15 tentativas": False,
+        "Acertou em até 5 tentativas": False,
+        "Acertou em até 3 tentativas": False
+    },
+    "Mega Projeto": {
+        "Iniciou o Mega Projeto": False
+    }
 }
 
-# Função para checar conquistas
-def checar_conquistas():
-    if perfil_usuario['jogadas_jokenpo'] >= 10 and "Viciado em Jokenpo" not in perfil_usuario['conquistas']:
-        perfil_usuario['conquistas'].append("Viciado em Jokenpo")
-        print("🏆 Conquista desbloqueada: Viciado em Jokenpo!")
+# Desbloqueio
+def desbloquear_conquista(categoria, nome):
+    if not conquistas[categoria][nome]:
+        conquistas[categoria][nome] = True
+        print(f"{VERDE}✅ Conquista desbloqueada: {nome}{RESET}")
+        time.sleep(1)
 
-    if perfil_usuario['jogadas_adivinha'] >= 5 and "Mestre da Adivinhação" not in perfil_usuario['conquistas']:
-        perfil_usuario['conquistas'].append("Mestre da Adivinhação")
-        print("🏆 Conquista desbloqueada: Mestre da Adivinhação!")
-
-    if perfil_usuario['interacoes_pythonzinho'] >= 20 and "Amigo do Pythonzinho" not in perfil_usuario['conquistas']:
-        perfil_usuario['conquistas'].append("Amigo do Pythonzinho")
-        print("🏆 Conquista desbloqueada: Amigo do Pythonzinho!")
-
-    if perfil_usuario['usos_calculadora'] >= 50 and "Calculista Profissional" not in perfil_usuario['conquistas']:
-        perfil_usuario['conquistas'].append("Calculista Profissional")
-        print("🏆 Conquista desbloqueada: Calculista Profissional!")
-
-# Função para ver perfil
-def ver_perfil():
+# Mega Projeto intro
+def mega_projeto():
     limpar_tela()
-    print("=== SEU PERFIL ===")
-    for k, v in perfil_usuario.items():
-        if k != 'conquistas':
-            print(f"{k}: {v}")
-    print("\n=== Conquistas Desbloqueadas ===")
-    for conquista in perfil_usuario['conquistas']:
-        print(f"- {conquista}")
-    if not perfil_usuario['conquistas']:
-        print("Nenhuma conquista ainda.")
+    print(f"{AMARELO}========================{RESET}")
+    print(f"{AMARELO}========================{RESET}")
+    print(f"{AMARELO}       MEGA PROJETO      {RESET}")
+    print(f"{AMARELO}========================{RESET}")
+    print(f"{AMARELO}========================{RESET}")
+    desbloquear_conquista("Mega Projeto", "Iniciou o Mega Projeto")
+    input("\nPressione ENTER para continuar...")
     limpar_tela()
 
-# Menu inicial
-def menu_inicial():
-    limpar_tela()
-    perfil_usuario['nome'] = input("Digite seu nome: ")
-    print("=" * 50)
-    print(f"   BEM-VINDO AO MEGA PROJETO, {perfil_usuario['nome']}!")
-    print("    JOGOS | CALCULADORA | PYTHONZINHO")
-    print("=" * 50)
-    limpar_tela()
+# Menu
+def menu():
+    while True:
+        print(f"{AZUL}=== MENU PRINCIPAL ==={RESET}")
+        print("1 - Jogos")
+        print("2 - Calculadora")
+        print("3 - Falar com Pythonzinho")
+        print("4 - Conquistas")
+        print("0 - Sair")
+        
+        escolha = input("Escolha: ")
+
+        if escolha == '1':
+            menu_jogos()
+        elif escolha == '2':
+            calculadora()
+        elif escolha == '3':
+            falar_com_pythonzinho()
+        elif escolha == '4':
+            mostrar_conquistas()
+        elif escolha == '0':
+            print(f"{VERMELHO}Saindo... Até logo!{RESET}")
+            break
+        else:
+            print(f"{VERMELHO}Opção inválida!{RESET}")
+            input("ENTER pra continuar...")
+
+# Menu de jogos
+def menu_jogos():
+    while True:
+        limpar_tela()
+        print(f"{AZUL}=== MENU JOGOS ==={RESET}")
+        print("1 - Jokenpo")
+        print("2 - Adivinha")
+        print("0 - Voltar")
+        
+        escolha = input("Escolha: ")
+
+        if escolha == '1':
+            pedra_papel_tesoura()
+        elif escolha == '2':
+            adivinhar_numero()
+        elif escolha == '0':
+            break
+        else:
+            print(f"{VERMELHO}Opção inválida!{RESET}")
+            input("ENTER pra continuar...")
 
 # Jokenpo
 def pedra_papel_tesoura():
-    vitorias_jogador = 0
-    vitorias_computador = 0
-    empates = 0
-
+    vitorias_seguidas = 0
+    derrotas_seguidas = 0
+    limpar_tela()
+    
     while True:
-        limpar_tela()
-        print("\n--- Jokenpo ---")
+        print(f"{AZUL}--- JOKENPO ---{RESET}")
         opcoes = ['pedra', 'papel', 'tesoura']
         jogador = input("Escolha pedra, papel ou tesoura: ").lower()
 
         if jogador not in opcoes:
-            print("Opção inválida. Tente novamente.")
+            print(f"{VERMELHO}Opção inválida!{RESET}")
             continue
 
         computador = random.choice(opcoes)
         print(f"Computador escolheu: {computador}")
+        time.sleep(0.5)
 
         if jogador == computador:
-            print("Empate.")
-            empates += 1
+            print(f"{AMARELO}Empate!{RESET}")
+            vitorias_seguidas = 0
+            derrotas_seguidas = 0
         elif (jogador == 'pedra' and computador == 'tesoura') or \
              (jogador == 'papel' and computador == 'pedra') or \
              (jogador == 'tesoura' and computador == 'papel'):
-            print("Você venceu.")
-            vitorias_jogador += 1
-            perfil_usuario['vitorias_jokenpo'] += 1
+            print(f"{VERDE}Você venceu!{RESET}")
+            vitorias_seguidas += 1
+            derrotas_seguidas = 0
+            if vitorias_seguidas == 3:
+                desbloquear_conquista("Jokenpo", "Venceu o bot 3 vezes seguidas")
         else:
-            print("Você perdeu.")
-            vitorias_computador += 1
+            print(f"{VERMELHO}Você perdeu!{RESET}")
+            vitorias_seguidas = 0
+            derrotas_seguidas += 1
+            if derrotas_seguidas == 3:
+                desbloquear_conquista("Jokenpo", "Perdeu 3 vezes seguidas")
 
-        perfil_usuario['jogadas_jokenpo'] += 1
-        checar_conquistas()
-
-        print(f"\nPlacar Atual:")
-        print(f"Você: {vitorias_jogador} | Computador: {vitorias_computador} | Empates: {empates}")
-
-        jogar_novamente = input("\nQuer jogar novamente? (s/n): ").lower()
-        if jogar_novamente != 's':
-            print("Voltando ao menu de jogos...")
-            limpar_tela()
+        jogar = input("Jogar de novo? (s/n): ").lower()
+        if jogar != 's':
             break
+        limpar_tela()
 
-# Adivinha
+# Adivinha número
 def adivinhar_numero():
     numero_secreto = random.randint(1, 100)
     tentativas = 0
     limpar_tela()
-    print("\n--- Jogo: Adivinha ---")
+
+    print(f"{AZUL}--- JOGO: ADIVINHA ---{RESET}")
 
     while True:
         try:
             palpite = int(input("Digite seu palpite: "))
             tentativas += 1
         except ValueError:
-            print("Por favor, digite um número inteiro válido.")
+            print(f"{VERMELHO}Digite um número válido!{RESET}")
             continue
 
         if palpite < numero_secreto:
-            print("Mais alto!")
+            print(f"{AMARELO}O número é maior que {palpite}{RESET}")
         elif palpite > numero_secreto:
-            print("Mais baixo!")
+            print(f"{AMARELO}O número é menor que {palpite}{RESET}")
         else:
-            print(f"Parabéns! Você acertou o número em {tentativas} tentativas.")
-            perfil_usuario['jogadas_adivinha'] += 1
-            checar_conquistas()
-            limpar_tela()
+            print(f"{VERDE}Parabéns! Acertou com {tentativas} tentativas!{RESET}")
+
+            if tentativas <= 15:
+                desbloquear_conquista("Adivinha", "Acertou em até 15 tentativas")
+            if tentativas <= 5:
+                desbloquear_conquista("Adivinha", "Acertou em até 5 tentativas")
+            if tentativas <= 3:
+                desbloquear_conquista("Adivinha", "Acertou em até 3 tentativas")
+
+            input("ENTER pra voltar...")
             break
 
 # Calculadora
 def calculadora():
     while True:
         limpar_tela()
-        print("\n--- CALCULADORA ---")
-        print("1. Adição")
-        print("2. Subtração")
-        print("3. Multiplicação")
-        print("4. Divisão")
-        print("5. Potência")
-        print("6. Tabuada")
-        print("0. Voltar ao menu principal")
+        print(f"{AZUL}--- CALCULADORA ---{RESET}")
+        print("1 - Adição")
+        print("2 - Subtração")
+        print("3 - Multiplicação")
+        print("4 - Divisão")
+        print("5 - Potência")
+        print("6 - Tabuada")
+        print("0 - Voltar")
 
-        opcao = input("Digite o número da sua opção: ")
+        opcao = input("Escolha: ")
 
         if opcao == '0':
             break
-
-        perfil_usuario['usos_calculadora'] += 1
-        checar_conquistas()
-
-        if opcao in ['1', '2', '3', '4', '5']:
+        elif opcao in ['1','2','3','4','5']:
             try:
-                n1 = float(input("Digite o primeiro número: "))
-                n2 = float(input("Digite o segundo número: "))
+                n1 = float(input("Primeiro número: "))
+                n2 = float(input("Segundo número: "))
             except ValueError:
-                print("Entrada inválida. Use apenas números.")
-                limpar_tela()
+                print(f"{VERMELHO}Entrada inválida!{RESET}")
+                input("ENTER pra continuar...")
                 continue
 
             if opcao == '1':
@@ -169,116 +208,61 @@ def calculadora():
                 if n2 != 0:
                     print(f"Resultado: {n1 / n2}")
                 else:
-                    print("Não é possível dividir por zero.")
+                    print(f"{VERMELHO}Não divide por zero!{RESET}")
             elif opcao == '5':
                 print(f"Resultado: {n1 ** n2}")
 
-            limpar_tela()
-
         elif opcao == '6':
             try:
-                numero = int(input("Digite o número da tabuada: "))
+                numero = int(input("Número da tabuada: "))
             except ValueError:
-                print("Entrada inválida. Use um número inteiro.")
-                limpar_tela()
+                print(f"{VERMELHO}Entrada inválida!{RESET}")
                 continue
 
-            print(f"\nTabuada do {numero}")
-            for i in range(1, 11):
+            for i in range(1,11):
                 print(f"{numero} x {i} = {numero * i}")
-            limpar_tela()
 
         else:
-            print("Opção inválida. Tente novamente.")
-            limpar_tela()
+            print(f"{VERMELHO}Opção inválida!{RESET}")
+        input("ENTER pra continuar...")
 
-# Falar com Pythonzinho
+# Conversa com Pythonzinho
 def falar_com_pythonzinho():
-    limpar_tela()
     respostas = {
         "qual seu nome?": "Eu sou o Pythonzinho, seu assistente virtual.",
-        "quantos anos você tem?": "Eu não tenho idade, pois sou um programa de computador.",
-        "tudo bem com você?": "Estou sempre bem, obrigado por perguntar!",
-        "o que você gosta de fazer?": "Eu adoro ajudar você com jogos, cálculos e aprender coisas novas.",
-        "você gosta de python?": "Sim, Python é minha linguagem favorita!",
-        "qual é seu jogo preferido?": "Eu gosto muito de jogar Jokenpo e Adivinha aqui no Mega Projeto.",
-        "você pode me ajudar?": "Claro! Estou aqui para ajudar no que você precisar.",
-        "como está o tempo aí?": "Eu não sei, pois não tenho acesso a informações externas ainda.",
-        "você gosta de música?": "Adoro música! Mas ainda não consigo ouvir.",
+        "quantos anos você tem?": "Eu não tenho idade, sou código!",
+        "tudo bem com você?": "Sempre bem, valeu!",
+        "o que você gosta de fazer?": "Gosto de rodar programas e ajudar.",
+        "você gosta de python?": "Lógico! Python é minha vida!",
+        "qual é seu jogo preferido?": "Adoro Jokenpo e Adivinha.",
+        "você pode me ajudar?": "Claro! Só perguntar.",
+        "como está o tempo aí?": "Não sei, ainda não tenho acesso à internet.",
+        "você gosta de música?": "Adoro! Pena que não posso ouvir."
     }
 
-    print("\n--- Fale com o Pythonzinho (digite 'sair' para voltar ao menu) ---")
-    print("Você pode perguntar coisas como:")
-    for pergunta in respostas.keys():
-        print(f"- {pergunta.capitalize()}")
-    print()
+    print(f"{AZUL}--- Fale com Pythonzinho ---{RESET}")
+    print("Perguntas que ele entende:")
+    for pergunta in respostas:
+        print(f"- {pergunta}")
 
     while True:
-        entrada = input("Você: ").lower().strip()
+        entrada = input("\nVocê: ").lower().strip()
         if entrada == 'sair':
             break
-
-        perfil_usuario['interacoes_pythonzinho'] += 1
-        checar_conquistas()
-
         resposta = respostas.get(entrada, "Ainda estou aprendendo a responder isso.")
         print(f"Pythonzinho: {resposta}")
 
-# Menu jogos
-def menu_jogos():
-    while True:
-        limpar_tela()
-        print("\n" + "="*40)
-        print("            MENU JOGOS")
-        print("="*40)
-        print("1 - Jokenpo")
-        print("2 - Adivinha")
-        print("0 - Voltar ao menu principal")
-        print("="*40)
+# Mostrar conquistas
+def mostrar_conquistas():
+    limpar_tela()
+    print(f"{AZUL}=== CONQUISTAS ==={RESET}")
+    for categoria, conquistas_categoria in conquistas.items():
+        print(f"\n{categoria}:")
+        for nome, desbloqueada in conquistas_categoria.items():
+            status = "✅" if desbloqueada else "🔒"
+            print(f"{status} {nome}")
+    input("\nENTER pra voltar...")
 
-        escolha = input("Digite o número da sua opção: ")
-
-        if escolha == '1':
-            pedra_papel_tesoura()
-        elif escolha == '2':
-            adivinhar_numero()
-        elif escolha == '0':
-            break
-        else:
-            print("Opção inválida. Tente novamente.")
-            limpar_tela()
-
-# Menu principal
-def menu_principal():
-    while True:
-        limpar_tela()
-        print("\n" + "="*50)
-        print("                 MENU PRINCIPAL")
-        print("="*50)
-        print("1 - Jogos")
-        print("2 - Calculadora")
-        print("3 - Falar com Pythonzinho")
-        print("4 - Ver meu perfil e conquistas")
-        print("0 - Sair")
-        print("="*50)
-
-        escolha = input("Digite o número da sua opção: ")
-
-        if escolha == '1':
-            menu_jogos()
-        elif escolha == '2':
-            calculadora()
-        elif escolha == '3':
-            falar_com_pythonzinho()
-        elif escolha == '4':
-            ver_perfil()
-        elif escolha == '0':
-            print("Saindo... Até logo!")
-            break
-        else:
-            print("Opção inválida. Tente novamente.")
-            limpar_tela()
-
-# Início
-menu_inicial()
-menu_principal()
+# --- Iniciar programa ---
+mega_projeto()
+menu()
