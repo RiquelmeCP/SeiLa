@@ -2,6 +2,7 @@ import random
 import os
 import json
 import time
+import unicodedata
 from colorama import init, Fore, Style
 
 # Inicializa colorama
@@ -9,6 +10,13 @@ init(autoreset=True)
 
 # Caminho do arquivo de banco JSON
 ARQUIVO_DB = "banco_dados.json"
+
+#Função de remover a necessidade de assentos
+def remover_acentos(texto):
+    if not isinstance(texto, str):
+        return texto
+    return ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn').lower()
+
 
 # Função para limpar tela
 def limpar_tela():
@@ -263,8 +271,6 @@ def calculadora(usuario, db):
         esperar_enter()
 
 # Pythonzinho (bot simples)
-import random
-
 def pythonzinho(usuario, db):
     limpar_tela()
     cabecalho("PYTHONZINHO BOT")
@@ -285,7 +291,7 @@ def pythonzinho(usuario, db):
     for pergunta, resposta in lista_perguntas:
         print(Fore.YELLOW + f"\nPergunta: {pergunta}")
         resp = input(Fore.CYAN + "Sua resposta: ").strip().lower()
-        if resp == resposta.lower():
+        if remover_acentos(resp) == remover_acentos(resposta):
             print(Fore.GREEN + "Resposta correta!")
             usuario["estatisticas"]["pythonzinho_respostas"] += 1
         else:
@@ -316,22 +322,80 @@ def menu_jogos(usuario, db):
 # Limpar cadastros com senha especial
 def limpar_cadastros(db, usuario_atual):
     limpar_tela()
-    cabecalho("LIMPAR CADASTROS")
+    cabecalho("GERENCIAR CADASTROS")
     senha_admin = "r3lat2025"
     senha = input(Fore.YELLOW + "Digite a senha para acessar esta opção: ")
     if senha != senha_admin:
         print(Fore.RED + "Senha incorreta! Acesso negado.")
         esperar_enter()
         return
-    confirm = input(Fore.RED + "Tem certeza que quer apagar todos os cadastros? (s/n): ").lower()
-    if confirm == 's':
-        db["usuarios"] = []
-        salvar_db(db)
-        print(Fore.GREEN + "Todos os cadastros foram apagados com sucesso!")
-        esperar_enter()
-    else:
-        print(Fore.YELLOW + "Operação cancelada.")
-        esperar_enter()
+
+    while True:
+        limpar_tela()
+        cabecalho("USUÁRIOS CADASTRADOS")
+        if not db["usuarios"]:
+            print(Fore.RED + "Nenhum usuário cadastrado.")
+            esperar_enter()
+            return
+
+        for i, user in enumerate(db["usuarios"], 1):
+            print(Fore.CYAN + f"{i}. {user['nome']}")
+
+        print(Fore.MAGENTA + "\nOpções:")
+        print("1 - Ver senha de um usuário")
+        print("2 - Excluir um usuário específico")
+        print("3 - Excluir TODOS os usuários")
+        print("4 - Voltar")
+
+        opcao = input(Fore.YELLOW + "\nEscolha uma opção: ")
+
+        if opcao == "1":
+            try:
+                indice = int(input(Fore.YELLOW + "Digite o número do usuário: ")) - 1
+                if 0 <= indice < len(db["usuarios"]):
+                    print(Fore.GREEN + f"Senha de {db['usuarios'][indice]['nome']}: {db['usuarios'][indice]['senha']}")
+                else:
+                    print(Fore.RED + "Usuário inválido.")
+            except ValueError:
+                print(Fore.RED + "Entrada inválida.")
+            esperar_enter()
+
+        elif opcao == "2":
+            try:
+                indice = int(input(Fore.YELLOW + "Digite o número do usuário para excluir: ")) - 1
+                if 0 <= indice < len(db["usuarios"]):
+                    nome_removido = db["usuarios"][indice]["nome"]
+                    confirm = input(Fore.RED + f"Tem certeza que deseja remover '{nome_removido}'? (s/n): ").lower()
+                    if confirm == "s":
+                        db["usuarios"].pop(indice)
+                        salvar_db(db)
+                        print(Fore.GREEN + f"Usuário '{nome_removido}' removido com sucesso.")
+                    else:
+                        print(Fore.YELLOW + "Operação cancelada.")
+                else:
+                    print(Fore.RED + "Usuário inválido.")
+            except ValueError:
+                print(Fore.RED + "Entrada inválida.")
+            esperar_enter()
+
+        elif opcao == "3":
+            confirm = input(Fore.RED + "Tem certeza que quer apagar TODOS os cadastros? (s/n): ").lower()
+            if confirm == 's':
+                db["usuarios"] = []
+                salvar_db(db)
+                print(Fore.GREEN + "Todos os cadastros foram apagados com sucesso!")
+                esperar_enter()
+                return
+            else:
+                print(Fore.YELLOW + "Operação cancelada.")
+                esperar_enter()
+
+        elif opcao == "4":
+            break
+
+        else:
+            print(Fore.RED + "Opção inválida!")
+            time.sleep(1)
 
 # Menu principal
 def menu_principal(usuario, db):
